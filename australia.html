@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>2027 Australia Family Trip</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sydney:        #1a6b5c;
+      --sydney-mid:    #6ab8a8;
+      --melbourne:     #2a4fa8;
+      --melbourne-mid: #7a9fd8;
+      --goldcoast:     #b85c00;
+      --goldcoast-mid: #e8a45a;
+      --brisbane:      #6b2fa8;
+      --brisbane-mid:  #b07ad8;
+      --ink:    #1a1a1a;
+      --muted:  #6b7280;
+      --subtle: #9ca3af;
+      --line:   #e5e7eb;
+      --surface:#ffffff;
+      --bg:     #f8f7f5;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.5;
+    }
+
+    /* ══════════════════════════════════════
+       TOP NAV — 3 main tabs
+    ══════════════════════════════════════ */
+    .top-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; z-index: 200;
+    }
+    .top-nav-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex;
+    }
+    .top-tab {
+      flex: 1;
+      padding: 16px 12px;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      color: var(--muted);
+      transition: all 0.18s; white-space: nowrap;
+      text-align: center;
+    }
+    .top-tab:hover { color: var(--ink); }
+    .top-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+    /* ══════════════════════════════════════
+       HERO (shared)
+    ══════════════════════════════════════ */
+    .hero {
+      position: relative; height: 380px; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 40px 44px;
+    }
+    .hero-img {
+      position: absolute; inset: 0;
+      background: center / cover no-repeat;
+    }
+    .hero-img::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(15,20,30,0.82) 0%, rgba(15,20,30,0.2) 55%, transparent 100%);
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; width: 100%; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
+      padding: 5px 14px; color: rgba(255,255,255,0.9);
+      font-size: 12px; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 16px;
+    }
+    .hero-eyebrow .dot { width:6px; height:6px; border-radius:50%; background:#7dd3c0; }
+    .hero h1 {
+      font-size: clamp(36px,6vw,68px); font-weight:700; color:#fff;
+      line-height:1; letter-spacing:-0.5px;
+    }
+    .hero h1 em { font-style:normal; color:#a5d8cf; }
+    .hero-meta { display:flex; gap:20px; align-items:center; margin-top:18px; color:rgba(255,255,255,0.7); font-size:14px; }
+    .hero-meta .sep { color:rgba(255,255,255,0.3); }
+
+    /* ══════════════════════════════════════
+       SUMMARY PILLS
+    ══════════════════════════════════════ */
+    .summary-row {
+      display:flex; flex-wrap:wrap; gap:10px;
+      max-width:1120px; margin:0 auto; padding:24px 40px 0;
+    }
+    .summary-pill {
+      display:flex; align-items:center; gap:8px;
+      background:var(--surface); border:1px solid var(--line);
+      border-radius:100px; padding:8px 16px; font-size:13px;
+    }
+    .summary-pill .pill-label { color:var(--muted); font-size:12px; }
+
+    /* ══════════════════════════════════════
+       SUB NAV (city strip — used in Schedule & Eats)
+    ══════════════════════════════════════ */
+    .sub-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      position: sticky; top: 49px; z-index: 100;
+    }
+    .sub-nav-inner {
+      max-width:1120px; margin:0 auto;
+      display:flex; overflow-x:auto; scrollbar-width:none;
+    }
+    .sub-nav-inner::-webkit-scrollbar { display:none; }
+    .sub-btn {
+      flex-shrink:0; display:flex; align-items:center; gap:8px;
+      padding:13px 20px; background:none; border:none; border-bottom:2px solid transparent;
+      cursor:pointer; font-family:inherit; font-size:13px; font-weight:500;
+      color:var(--muted); transition:all 0.18s; white-space:nowrap;
+    }
+    .sub-btn:hover { color:var(--ink); }
+    .sub-btn.active { color:var(--ink); border-bottom-color:var(--ink); }
+    .sub-btn .pip { width:8px; height:8px; border-radius:50%; background:currentColor; opacity:0.5; transition:opacity 0.18s; }
+    .sub-btn.active .pip { opacity:1; }
+    .sub-btn[data-city="sydney"].active    { color:var(--sydney);    border-bottom-color:var(--sydney); }
+    .sub-btn[data-city="melbourne"].active { color:var(--melbourne); border-bottom-color:var(--melbourne); }
+    .sub-btn[data-city="goldcoast"].active { color:var(--goldcoast); border-bottom-color:var(--goldcoast); }
+    .sub-btn[data-city="brisbane"].active  { color:var(--brisbane);  border-bottom-color:var(--brisbane); }
+
+    /* ══════════════════════════════════════
+       MAIN CONTENT WRAPPER
+    ══════════════════════════════════════ */
+    .content-area { max-width:1120px; margin:0 auto; padding:44px 40px 80px; }
+
+    /* ══════════════════════════════════════
+       SCHEDULE TAB — day cards
+    ══════════════════════════════════════ */
+    .city-section { margin-bottom:56px; }
+    .city-section:last-child { margin-bottom:0; }
+    .city-header { display:flex; align-items:baseline; gap:14px; margin-bottom:20px; }
+    .city-header h2 { font-size:26px; font-weight:700; letter-spacing:-0.3px; }
+    .city-header .city-date-range {
+      font-size:13px; color:var(--muted); padding:3px 10px;
+      background:var(--bg); border-radius:100px; border:1px solid var(--line);
+    }
+    .sydney    .city-header h2 { color:var(--sydney); }
+    .melbourne .city-header h2 { color:var(--melbourne); }
+    .goldcoast .city-header h2 { color:var(--goldcoast); }
+    .brisbane  .city-header h2 { color:var(--brisbane); }
+
+    .days-grid { display:grid; gap:10px; }
+    .day-card {
+      background:var(--surface); border:1px solid var(--line);
+      border-radius:14px; overflow:hidden; transition:box-shadow 0.18s;
+    }
+    .day-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.07); }
+    .day-card.is-tour { cursor:pointer; }
+    .day-card.is-tour:hover { box-shadow:0 6px 28px rgba(0,0,0,0.11); }
+    .sydney    .day-card { border-left:3px solid var(--sydney); }
+    .melbourne .day-card { border-left:3px solid var(--melbourne); }
+    .goldcoast .day-card { border-left:3px solid var(--goldcoast); }
+    .brisbane  .day-card { border-left:3px solid var(--brisbane); }
+    .sydney    .day-card.is-tour:hover { border-color:var(--sydney-mid); }
+    .melbourne .day-card.is-tour:hover { border-color:var(--melbourne-mid); }
+    .goldcoast .day-card.is-tour:hover { border-color:var(--goldcoast-mid); }
+    .brisbane  .day-card.is-tour:hover { border-color:var(--brisbane-mid); }
+
+    .day-card-head { display:flex; align-items:center; }
+    .day-date-col { flex-shrink:0; width:88px; padding:18px 16px; border-right:1px solid var(--line); text-align:center; }
+    .day-date-num { font-size:20px; font-weight:700; color:var(--ink); }
+    .day-date-dow { font-size:11px; color:var(--subtle); margin-top:3px; }
+    .day-title-col { flex:1; padding:18px 20px; }
+    .day-title-col h3 { font-size:15px; font-weight:500; letter-spacing:-0.1px; }
+    .tour-arrow { flex-shrink:0; padding:0 20px 0 8px; color:var(--subtle); font-size:20px; }
+
+    .stops { padding:0 20px 20px 108px; display:flex; flex-direction:column; }
+    .stop-row { display:flex; align-items:flex-start; padding:5px 0; }
+    .stop-line-col { flex-shrink:0; width:28px; display:flex; flex-direction:column; align-items:center; }
+    .stop-dot { width:7px; height:7px; border-radius:50%; margin-top:6px; flex-shrink:0; }
+    .stop-connector { width:1px; flex:1; min-height:12px; background:var(--line); margin-top:2px; }
+    .stop-row:last-child .stop-connector { display:none; }
+    .stop-text { font-size:13px; color:var(--ink); padding:4px 0; line-height:1.4; }
+    .sydney    .stop-dot { background:var(--sydney-mid); }
+    .melbourne .stop-dot { background:var(--melbourne-mid); }
+    .goldcoast .stop-dot { background:var(--goldcoast-mid); }
+    .brisbane  .stop-dot { background:var(--brisbane-mid); }
+    .meal-badge {
+      display:inline-block; font-size:10px; font-weight:600;
+      padding:2px 7px; border-radius:100px; vertical-align:middle;
+    }
+    .meal-점심 { background:#fff4e0; color:#a85c00; border:1px solid #fad5a0; }
+    .meal-저녁 { background:#fde8e8; color:#a02020; border:1px solid #f5b8b8; }
+
+    /* ══════════════════════════════════════
+       EATS TAB — landmark sub-tabs + place cards
+    ══════════════════════════════════════ */
+    .landmark-strip {
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+    .lm-btn {
+      padding:7px 14px; background:var(--surface);
+      border:1px solid var(--line); border-radius:100px;
+      cursor:pointer; font-family:inherit; font-size:12px; font-weight:500;
+      color:var(--muted); transition:all 0.18s; white-space:nowrap;
+    }
+    .lm-btn:hover { border-color:#aab4be; color:var(--ink); }
+    .lm-btn.active { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+    .eats-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; }
+
+    .place-card {
+      background:var(--surface); border:1px solid var(--line);
+      border-radius:14px; overflow:hidden;
+      cursor:pointer; transition:box-shadow 0.18s, transform 0.18s;
+      text-decoration:none; color:inherit; display:block;
+    }
+    .place-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.1); transform:translateY(-2px); }
+
+    .place-photo {
+      width:100%; aspect-ratio:4/3;
+      background:#e8edf3;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; position:relative;
+    }
+    .place-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+    .place-photo-placeholder { display:flex; flex-direction:column; align-items:center; gap:8px; color:#aab4be; }
+    .place-photo-placeholder svg { width:32px; height:32px; opacity:0.5; }
+    .place-photo-placeholder span { font-size:12px; }
+
+    .place-info { padding:16px 18px 18px; }
+    .place-name-ko { font-size:17px; font-weight:700; letter-spacing:-0.2px; }
+    .place-name-en { font-size:12px; color:var(--muted); margin-top:3px; }
+    .place-category {
+      margin-top:8px; font-size:12px; font-weight:600;
+      color:var(--muted); letter-spacing:0.02em;
+    }
+    .place-desc { margin-top:6px; font-size:13px; color:#4b5563; line-height:1.6; }
+    .place-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
+    .place-tag {
+      display:inline-block; font-size:11px; font-weight:600;
+      padding:3px 9px; border-radius:100px;
+      background:#f0f4f8; color:var(--muted);
+      border:1px solid var(--line);
+    }
+    .place-link-hint {
+      margin-top:12px; font-size:11px; color:var(--subtle);
+      display:flex; align-items:center; gap:4px;
+    }
+
+    /* ══════════════════════════════════════
+       TOUR GUIDE TAB — tour selector cards
+    ══════════════════════════════════════ */
+    .tour-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; }
+
+    .tour-select-card {
+      border-radius:16px; overflow:hidden; cursor:pointer;
+      position:relative; aspect-ratio:3/2;
+      display:flex; flex-direction:column; justify-content:flex-end;
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .tour-select-card:hover { transform:translateY(-3px); box-shadow:0 12px 36px rgba(0,0,0,0.18); }
+    .tour-select-bg {
+      position:absolute; inset:0;
+      background:center/cover no-repeat;
+    }
+    .tour-select-bg::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(15,20,30,0.80) 0%, rgba(15,20,30,0.1) 55%, transparent 100%);
+    }
+    .tour-select-info { position:relative; z-index:1; padding:20px 22px 22px; }
+    .tour-select-date { font-size:12px; font-weight:500; color:rgba(255,255,255,0.7); margin-bottom:5px; }
+    .tour-select-title { font-size:20px; font-weight:700; color:#fff; line-height:1.2; letter-spacing:-0.2px; }
+    .tour-select-count { margin-top:6px; font-size:12px; color:rgba(255,255,255,0.6); }
+
+    /* ══════════════════════════════════════
+       DETAIL PAGE (tour spot detail)
+    ══════════════════════════════════════ */
+    #page-detail { display:none; }
+
+    .detail-header {
+      position:relative; height:260px; overflow:hidden;
+      display:flex; flex-direction:column; justify-content:flex-end;
+      padding:0 40px 34px;
+    }
+    .detail-header-img { position:absolute; inset:0; background:center/cover no-repeat; }
+    .detail-header-img::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(15,20,30,0.82) 0%, rgba(15,20,30,0.15) 60%, transparent 100%);
+    }
+    .detail-header-inner { position:relative; z-index:1; max-width:800px; margin:0 auto; width:100%; }
+    .detail-back {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.15); backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.25); border-radius:100px;
+      padding:6px 14px; color:rgba(255,255,255,0.9);
+      font-size:12px; font-weight:500; cursor:pointer; font-family:inherit;
+      margin-bottom:18px;
+    }
+    .detail-back:hover { background:rgba(255,255,255,0.22); }
+    .detail-header h1 { font-size:clamp(22px,5vw,40px); font-weight:700; color:#fff; line-height:1.1; letter-spacing:-0.4px; }
+    .detail-header-date { margin-top:6px; color:rgba(255,255,255,0.7); font-size:13px; }
+
+    .detail-body { max-width:800px; margin:0 auto; padding:36px 40px 80px; }
+
+    .spot-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:20px; }
+    .spot-card:last-child { margin-bottom:0; }
+    .spot-photo { width:100%; aspect-ratio:16/9; background:#e8edf3; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .spot-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+    .spot-photo-placeholder { display:flex; flex-direction:column; align-items:center; gap:10px; color:#aab4be; }
+    .spot-photo-placeholder svg { width:36px; height:36px; opacity:0.5; }
+    .spot-photo-placeholder span { font-size:13px; }
+    .spot-num { position:absolute; top:14px; left:14px; width:30px; height:30px; border-radius:50%; background:rgba(15,20,30,0.55); backdrop-filter:blur(6px); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .spot-info { padding:22px 24px 26px; }
+    .spot-name-ko { font-size:22px; font-weight:700; letter-spacing:-0.3px; line-height:1.2; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .spot-name-en { font-size:14px; color:var(--muted); margin-top:4px; }
+    .spot-desc { margin-top:14px; font-size:15px; color:#374151; line-height:1.75; }
+
+    /* ══════════════════════════════════════
+       EMPTY STATE
+    ══════════════════════════════════════ */
+    .empty-state {
+      padding:60px 20px; text-align:center; color:var(--muted);
+    }
+    .empty-state p { font-size:15px; margin-top:8px; }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width:680px) {
+      .hero { height:320px; padding:0 20px 34px; }
+      .content-area { padding:28px 20px 60px; }
+      .summary-row { padding:18px 20px 0; }
+      .day-date-col { width:72px; padding:14px 10px; }
+      .day-title-col { padding:14px 14px; }
+      .stops { padding-left:84px; }
+      .sub-btn { padding:11px 14px; }
+      .top-tab { font-size:13px; padding:14px 8px; }
+      .detail-header { height:220px; padding:0 20px 26px; }
+      .detail-body { padding:24px 20px 60px; }
+      .spot-info { padding:18px 18px 22px; }
+      .spot-name-ko { font-size:20px; }
+      .spot-desc { font-size:15px; }
+      .eats-grid { grid-template-columns:1fr; }
+      .tour-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     TOP NAV
+══════════════════════════════════════ -->
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <button class="top-tab active" data-tab="schedule">📅 일정</button>
+    <button class="top-tab"        data-tab="eats">🍽 맛집 &amp; 카페</button>
+    <button class="top-tab"        data-tab="tours">🗺 투어 가이드</button>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════
+     SCHEDULE TAB
+══════════════════════════════════════ -->
+<div id="tab-schedule">
+  <header class="hero">
+    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1800&q=80')"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="dot"></span>2027년 1월 18일 ~ 2월 2일</div>
+      <h1>Australia<br><em>Family Trip</em> ✈️</h1>
+      <div class="hero-meta">
+        <span>🗓 14박 16일</span><span class="sep">·</span><span>🏙 4개 도시</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="summary-row">
+    <div class="summary-pill"><span class="pill-label">✈️ 출발</span>2027년 1월 18일</div>
+    <div class="summary-pill"><span class="pill-label">🏠 도착</span>2027년 2월 2일</div>
+    <div class="summary-pill"><span class="pill-label">📅 기간</span>14박 16일</div>
+    <div class="summary-pill"><span class="pill-label">🏙 도시</span>4개</div>
+  </div>
+
+  <div class="sub-nav">
+    <div class="sub-nav-inner" id="schedule-city-nav">
+      <button class="sub-btn active" data-city="all">전체 일정</button>
+      <button class="sub-btn" data-city="sydney"><span class="pip"></span>시드니</button>
+      <button class="sub-btn" data-city="melbourne"><span class="pip"></span>멜버른</button>
+      <button class="sub-btn" data-city="goldcoast"><span class="pip"></span>골드코스트</button>
+      <button class="sub-btn" data-city="brisbane"><span class="pip"></span>브리즈번</button>
+    </div>
+  </div>
+
+  <div class="content-area" id="schedule-content"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     EATS TAB
+══════════════════════════════════════ -->
+<div id="tab-eats" style="display:none">
+  <header class="hero" style="height:220px">
+    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1800&q=80')"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="dot"></span>도시별 맛집 &amp; 카페</div>
+      <h1>🍽 맛집 &amp; <em>카페</em></h1>
+    </div>
+  </header>
+
+  <div class="sub-nav">
+    <div class="sub-nav-inner" id="eats-city-nav">
+      <button class="sub-btn active" data-city="sydney"><span class="pip"></span>시드니</button>
+      <button class="sub-btn" data-city="melbourne"><span class="pip"></span>멜버른</button>
+      <button class="sub-btn" data-city="goldcoast"><span class="pip"></span>골드코스트</button>
+      <button class="sub-btn" data-city="brisbane"><span class="pip"></span>브리즈번</button>
+    </div>
+  </div>
+
+  <div class="content-area">
+    <div class="landmark-strip" id="landmark-strip"></div>
+    <div class="eats-grid" id="eats-content"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     TOUR GUIDE TAB
+══════════════════════════════════════ -->
+<div id="tab-tours" style="display:none">
+  <header class="hero" style="height:220px">
+    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=1800&q=80')"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="dot"></span>투어별 가이드</div>
+      <h1>🗺 투어 <em>가이드</em></h1>
+    </div>
+  </header>
+  <div class="content-area">
+    <div class="tour-grid" id="tour-list"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     DETAIL PAGE (tour spot)
+══════════════════════════════════════ -->
+<div id="page-detail">
+  <header class="detail-header">
+    <div class="detail-header-img" id="detail-hero-img"></div>
+    <div class="detail-header-inner">
+      <button class="detail-back" id="btn-back">← 돌아가기</button>
+      <h1 id="detail-title"></h1>
+      <div class="detail-header-date" id="detail-date"></div>
+    </div>
+  </header>
+  <div class="detail-body" id="detail-spots"></div>
+</div>
+
+
+<script>
+/* ═══════════════════════════════
+   DATA — SCHEDULE
+═══════════════════════════════ */
+const CITIES = [
+  { id:"sydney",    name:"🦘 시드니",     range:"1/19 – 1/23" },
+  { id:"melbourne", name:"☕ 멜버른",     range:"1/23 – 1/27" },
+  { id:"goldcoast", name:"🌊 골드코스트", range:"1/27 – 1/30" },
+  { id:"brisbane",  name:"🌿 브리즈번",   range:"1/30 – 2/2"  }
+];
+
+const DAYS = [
+  { city:"sydney", date:"1/18", dow:"월", title:"한국 출발", stops:[{t:"20:00 한국 출발"}] },
+  { city:"sydney", date:"1/19", dow:"화", title:"시드니 시내", stops:[
+      {t:"8:20 시드니 도착 (현지 시간)"},
+      {t:"서큘러키, 오페라하우스, 하버브릿지", group:true},
+      {t:"하이드 파크 (피크닉)"},
+      {t:"퀸 빅토리아 빌딩, 피트 스트리트 몰", group:true}
+  ]},
+  { city:"sydney", date:"1/20", dow:"수", title:"블루마운틴 국립공원", tourId:"bluemountains", stops:[
+      {t:"9:00 렌트카 픽업"},{t:"시닉월드 케이블카"},{t:"에코 포인트"},
+      {t:"웬트워스 폴스 트래킹"},{t:"링컨 락"},
+      {t:"카툼바 마을", meal:"저녁"},{t:"카힐 룩아웃 선셋"}
+  ]},
+  { city:"sydney", date:"1/21", dow:"목", title:"포트스테판", tourId:"portstephens", stops:[
+      {t:"7:30 출발"},{t:"10:00–12:00 스톡턴 모래사막 샌드보딩"},
+      {t:"넬슨 베이", meal:"점심"},{t:"13:30–15:00 넬슨 베이 돌핀 크루즈"},
+      {t:"달링하버 야경"}
+  ]},
+  { city:"sydney", date:"1/22", dow:"금", title:"시드니 시내", stops:[
+      {t:"9:00 렌트카 반납"},{t:"9:45–10:15 시드니 오페라하우스 한국어 가이드 투어"},
+      {t:"패디스 마켓", meal:"점심"},{t:"본다이 아이스버그 수영"},{t:"본다이비치 선셋"}
+  ]},
+  { city:"melbourne", date:"1/23", dow:"토", title:"멜버른 이동", stops:[
+      {t:"시드니 출발"},{t:"멜버른 도착"},{t:"야라강 산책"}
+  ]},
+  { city:"melbourne", date:"1/24", dow:"일", title:"멜버른 시내", stops:[
+      {t:"플린더스 스트리트 역"},{t:"페더레이션 스퀘어, 호시어레인", group:true},
+      {t:"빅토리아 주립 도서관"},{t:"퀸 빅토리아 몰"}
+  ]},
+  { city:"melbourne", date:"1/25", dow:"월", title:"그레이트 오션로드", tourId:"greatoceanroad", stops:[
+      {t:"7:30 렌트카 픽업"},{t:"메모리얼 아치"},{t:"케넷 리버 네이처 워크"},
+      {t:"아폴로 베이", meal:"점심"},{t:"12사도 바위"},{t:"레이저백"},
+      {t:"아일랜드 아치"},{t:"로드 아크 고지"},{t:"12사도 바위 선셋"}
+  ]},
+  { city:"melbourne", date:"1/26", dow:"화", title:"멜버른 시내", stops:[
+      {t:"퀸 빅토리아 마켓"},{t:"피츠로이 가든 (피크닉)"},{t:"세인트 킬다 비치"},{t:"루나 파크 야경"}
+  ]},
+  { city:"goldcoast", date:"1/27", dow:"수", title:"골드코스트 이동", stops:[
+      {t:"멜버른 출발"},{t:"골드코스트 도착"},{t:"캐빌 애비뉴"},{t:"서퍼스파라다이스 산책"}
+  ]},
+  { city:"goldcoast", date:"1/28", dow:"목", title:"골드코스트 여행", stops:[
+      {t:"골드코스트 스카이다이빙"},{t:"서퍼스파라다이스, 브로드비치 수영", group:true}
+  ]},
+  { city:"goldcoast", date:"1/29", dow:"금", title:"골드코스트 여행", stops:[
+      {t:"8:00 렌트카 픽업"},{t:"커럼빈 야생동물 보호구역"},{t:"레인보우 베이 수영"}
+  ]},
+  { city:"brisbane", date:"1/30", dow:"토", title:"브리즈번 이동", stops:[
+      {t:"버레이헤즈 트래킹"},{t:"골드코스트 출발"},{t:"브리즈번 도착"},{t:"사우스뱅크 산책"}
+  ]},
+  { city:"brisbane", date:"1/31", dow:"일", title:"브리즈번 여행", stops:[
+      {t:"8:00 렌트카 반납"},{t:"시티캣 페리"},{t:"시티 보태닉 가든 (피크닉)"},{t:"하워드 스미스 워프즈 선셋"}
+  ]},
+  { city:"brisbane", date:"2/1", dow:"월", title:"브리즈번 여행", stops:[
+      {t:"캥거루 포인트 클리프 공원 (피크닉)"},{t:"퀸 스트리트 몰"}
+  ]},
+  { city:"brisbane", date:"2/2", dow:"화", title:"귀국", stops:[
+      {t:"11:55 브리즈번 출발 (현지 시간)"},{t:"20:45 한국 도착 (현지 시간)"}
+  ]}
+];
+
+/* ═══════════════════════════════
+   DATA — TOUR GUIDES
+═══════════════════════════════ */
+const TOURS = {
+  bluemountains: {
+    title:"블루마운틴 국립공원", date:"2027년 1월 20일 수요일",
+    heroBg:"https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=1400&q=80",
+    spots:[
+      { nameKo:"시닉월드 케이블카", nameEn:"Scenic World Cable Car", photo:null,
+        desc:"세계에서 가장 가파른 철도 중 하나를 포함한 블루마운틴의 대표 어트랙션. 케이블카, 스카이웨이, 레일웨이를 통해 협곡 위와 아래를 모두 경험할 수 있어요." },
+      { nameKo:"에코 포인트 & 자매봉", nameEn:"Echo Point & The Three Sisters", photo:null,
+        desc:"블루마운틴에서 가장 유명한 전망대. 세 개의 바위 기둥인 자매봉을 가장 잘 볼 수 있는 곳이에요. 원주민 전설에 따르면 세 자매가 마법에 걸려 바위가 되었다고 합니다." },
+      { nameKo:"웬트워스 폴스", nameEn:"Wentworth Falls", photo:null,
+        desc:"약 187m 높이에서 세 단계로 떨어지는 장대한 폭포. 트래킹 코스가 잘 정비되어 있어 가족 모두 걷기 좋아요." },
+      { nameKo:"링컨 락", nameEn:"Lincoln's Rock", photo:null,
+        desc:"많이 알려지지 않은 숨겨진 전망 포인트. 바위 끝에 서면 광활한 자멜슨 계곡이 한눈에 펼쳐져요." },
+      { nameKo:"카툼바 마을", nameEn:"Katoomba Village", photo:null, meal:"저녁",
+        desc:"블루마운틴 여행의 중심 마을. 아르데코 건축 양식의 건물들이 줄지어 있고 아늑한 레스토랑과 카페가 많아요." },
+      { nameKo:"카힐 룩아웃", nameEn:"Cahills Lookout", photo:null,
+        desc:"카툼바에서 가까운 전망대로, 해질 무렵 방문하면 협곡 위로 물드는 노을이 황홀합니다." }
+    ]
+  },
+  portstephens: {
+    title:"포트스테판", date:"2027년 1월 21일 목요일",
+    heroBg:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80",
+    spots:[
+      { nameKo:"스톡턴 모래사막 샌드보딩", nameEn:"Stockton Sand Dunes Sandboarding", photo:null,
+        desc:"남반구에서 가장 큰 모래언덕 중 하나인 스톡턴 비치에서 즐기는 샌드보딩. 아이부터 어른까지 모두 즐길 수 있어요." },
+      { nameKo:"넬슨 베이", nameEn:"Nelson Bay", photo:null, meal:"점심",
+        desc:"포트스테판의 중심 항구 마을. 갓 잡은 신선한 피시 앤 칩스나 바닷가재 요리를 즐기기 좋은 곳입니다." },
+      { nameKo:"넬슨 베이 돌핀 크루즈", nameEn:"Nelson Bay Dolphin Cruise", photo:null,
+        desc:"포트스테판 만에는 상주하는 야생 돌고래 무리가 있어요. 보트를 타고 나가면 돌고래들이 배 주변에서 함께 헤엄치는 모습을 가까이서 볼 수 있습니다." }
+    ]
+  },
+  greatoceanroad: {
+    title:"그레이트 오션로드", date:"2027년 1월 25일 월요일",
+    heroBg:"https://images.unsplash.com/photo-1545193544-312983719627?auto=format&fit=crop&w=1400&q=80",
+    spots:[
+      { nameKo:"메모리얼 아치", nameEn:"Memorial Arch", photo:null,
+        desc:"그레이트 오션로드의 공식 시작점을 알리는 기념 아치. 1차 세계대전 후 귀환한 병사들이 직접 도로를 건설했어요." },
+      { nameKo:"케넷 리버 네이처 워크", nameEn:"Kennett River Nature Walk", photo:null,
+        desc:"야생 코알라를 자연 서식지에서 가장 쉽게 볼 수 있는 곳 중 하나예요." },
+      { nameKo:"아폴로 베이", nameEn:"Apollo Bay", photo:null, meal:"점심",
+        desc:"아름다운 해변을 품은 아늑한 어촌 마을. 갓 잡은 해산물 요리로 유명해요." },
+      { nameKo:"12사도 바위", nameEn:"Twelve Apostles", photo:null,
+        desc:"그레이트 오션로드에서 가장 유명한 명소. 수백만 년에 걸친 파도의 침식으로 만들어진 거대한 석회암 기둥들이에요." },
+      { nameKo:"레이저백", nameEn:"Razorback", photo:null,
+        desc:"면도날처럼 날카롭게 뻗은 좁고 긴 바위 능선이 인상적인 전망 포인트입니다." },
+      { nameKo:"아일랜드 아치 & 로드 아크 고지", nameEn:"Island Archway & Loch Ard Gorge", photo:null,
+        desc:"자연이 만든 거대한 아치형 바위와, 좁은 협곡 사이로 에메랄드빛 바다가 들어오는 로드 아크 고지." },
+      { nameKo:"12사도 바위 선셋", nameEn:"Twelve Apostles Sunset", photo:null,
+        desc:"해가 질 무렵 다시 찾는 12사도 바위는 낮과 전혀 다른 풍경을 선사해요. 그레이트 오션로드 하루의 완벽한 마무리." }
+    ]
+  }
+};
+
+/* ═══════════════════════════════
+   DATA — EATS
+   landmarks: array of landmark group names (used for filter tabs)
+═══════════════════════════════ */
+const EATS = {
+  sydney: {
+    landmarks: ["전체", "서큘러키 / 오페라하우스", "하이드 파크", "패디스 마켓", "퀸 빅토리아 빌딩", "달링 하버", "카툼바 (블루마운틴)", "넬슨 베이 (포트스테판)"],
+    places: [
+      {
+        nameKo:"예시 레스토랑 A", nameEn:"Example Restaurant A",
+        category:"시푸드 / 오스트레일리안", photo:null,
+        desc:"오페라하우스 앞에 위치한 멋진 전망의 레스토랑.",
+        landmarks:["서큘러키 / 오페라하우스"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 카페 B", nameEn:"Example Cafe B",
+        category:"카페 / 브런치", photo:null,
+        desc:"하이드 파크 근처의 아늑한 브런치 카페.",
+        landmarks:["하이드 파크"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 레스토랑 C", nameEn:"Example Restaurant C",
+        category:"이탈리안", photo:null,
+        desc:null,
+        landmarks:["퀸 빅토리아 빌딩", "달링 하버"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 카페 D", nameEn:"Example Cafe D",
+        category:"카페", photo:null,
+        desc:"패디스 마켓 바로 옆, 가성비 좋은 커피.",
+        landmarks:["패디스 마켓"],
+        mapUrl:"https://maps.google.com"
+      }
+    ]
+  },
+  melbourne: {
+    landmarks: ["전체", "플린더스 스트리트 / 페더레이션 스퀘어", "퀸 빅토리아 마켓", "세인트 킬다", "아폴로 베이 (그레이트 오션로드)"],
+    places: [
+      {
+        nameKo:"예시 레스토랑 E", nameEn:"Example Restaurant E",
+        category:"모던 오스트레일리안", photo:null,
+        desc:"야라강변 뷰가 멋진 다이닝 레스토랑.",
+        landmarks:["플린더스 스트리트 / 페더레이션 스퀘어"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 브런치 G", nameEn:"Example Brunch G",
+        category:"브런치", photo:null,
+        desc:null,
+        landmarks:["퀸 빅토리아 마켓"],
+        mapUrl:"https://maps.google.com"
+      }
+    ]
+  },
+  goldcoast: {
+    landmarks: ["전체", "서퍼스파라다이스", "레인보우 베이", "커럼빈"],
+    places: [
+      {
+        nameKo:"예시 레스토랑 H", nameEn:"Example Restaurant H",
+        category:"시푸드", photo:null,
+        desc:"서퍼스파라다이스 해변 바로 옆 신선한 시푸드.",
+        landmarks:["서퍼스파라다이스"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 카페 I", nameEn:"Example Cafe I",
+        category:"카페 / 아사이볼", photo:null,
+        desc:"레인보우 베이의 힙한 아사이볼 & 스무디 카페.",
+        landmarks:["레인보우 베이"],
+        mapUrl:"https://maps.google.com"
+      }
+    ]
+  },
+  brisbane: {
+    landmarks: ["전체", "사우스뱅크", "하워드 스미스 워프즈", "퀸 스트리트 몰"],
+    places: [
+      {
+        nameKo:"예시 레스토랑 J", nameEn:"Example Restaurant J",
+        category:"바베큐 / 그릴", photo:null,
+        desc:"하워드 스미스 워프즈의 강변 뷰 바베큐 레스토랑.",
+        landmarks:["하워드 스미스 워프즈"],
+        mapUrl:"https://maps.google.com"
+      },
+      {
+        nameKo:"예시 카페 K", nameEn:"Example Cafe K",
+        category:"카페 / 디저트", photo:null,
+        desc:null,
+        landmarks:["사우스뱅크", "퀸 스트리트 몰"],
+        mapUrl:"https://maps.google.com"
+      }
+    ]
+  }
+};
+
+/* ═══════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+const photoPlaceholder = `
+  <div class="spot-photo-placeholder">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <path d="M21 15l-5-5L5 21"/>
+    </svg>
+    <span>사진 준비 중</span>
+  </div>`;
+
+/* ═══════════════════════════════
+   SCHEDULE RENDERING
+═══════════════════════════════ */
+function stopHTML(s) {
+  const meal = s.meal ? `<span class="meal-badge meal-${s.meal}">${s.meal}</span>&nbsp;&nbsp;` : "";
+  return `<div class="stop-row">
+    <div class="stop-line-col"><div class="stop-dot"></div><div class="stop-connector"></div></div>
+    <div class="stop-text">${meal}${s.t}</div>
+  </div>`;
+}
+
+function dayCardHTML(d) {
+  const isTour = !!d.tourId;
+  return `
+    <article class="day-card${isTour?" is-tour":""}" ${isTour?`onclick="openTour('${d.tourId}')" role="button" tabindex="0"`:""}>
+      <div class="day-card-head">
+        <div class="day-date-col">
+          <div class="day-date-num">${d.date}</div>
+          <div class="day-date-dow">${d.dow}</div>
+        </div>
+        <div class="day-title-col">
+          <h3>${d.title}${isTour?` <span style="font-size:11px;font-weight:500;color:var(--muted);margin-left:6px;">가이드 보기</span>`:""}
+          </h3>
+        </div>
+        ${isTour?`<div class="tour-arrow">›</div>`:""}
+      </div>
+      <div class="stops">${d.stops.map(stopHTML).join("")}</div>
+    </article>`;
+}
+
+function renderSchedule(cityFilter) {
+  document.getElementById("schedule-content").innerHTML = CITIES
+    .filter(c => cityFilter==="all" || c.id===cityFilter)
+    .map(c => {
+      const ds = DAYS.filter(d => d.city===c.id);
+      return `<section class="city-section ${c.id}">
+        <div class="city-header">
+          <h2>${c.name}</h2>
+          <span class="city-date-range">${c.range}</span>
+        </div>
+        <div class="days-grid">${ds.map(dayCardHTML).join("")}</div>
+      </section>`;
+    }).join("");
+}
+
+document.querySelectorAll("#schedule-city-nav .sub-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#schedule-city-nav .sub-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderSchedule(btn.dataset.city);
+    document.getElementById("schedule-content").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+});
+
+/* ═══════════════════════════════
+   EATS RENDERING
+═══════════════════════════════ */
+let currentEatsCity = "sydney";
+let currentLandmark = "전체";
+
+function placeCardHTML(p) {
+  const photoInner = p.photo ? `<img src="${p.photo}" alt="${p.nameKo}">` : photoPlaceholder;
+  const desc = p.desc ? `<div class="place-desc">${p.desc}</div>` : "";
+  const tags = p.landmarks.map(l=>`<span class="place-tag">${l}</span>`).join("");
+  return `
+    <a class="place-card" href="${p.mapUrl}" target="_blank" rel="noopener">
+      <div class="place-photo">${photoInner}</div>
+      <div class="place-info">
+        <div class="place-name-ko">${p.nameKo}</div>
+        <div class="place-name-en">${p.nameEn}</div>
+        <div class="place-category">${p.category}</div>
+        ${desc}
+        <div class="place-tags">${tags}</div>
+        <div class="place-link-hint">
+          📍 Google Maps에서 보기
+        </div>
+      </div>
+    </a>`;
+}
+
+function renderEats() {
+  const data = EATS[currentEatsCity];
+
+  // Landmark tabs
+  document.getElementById("landmark-strip").innerHTML = data.landmarks.map(lm =>
+    `<button class="lm-btn${lm===currentLandmark?" active":""}" data-lm="${lm}">${lm}</button>`
+  ).join("");
+  document.querySelectorAll(".lm-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentLandmark = btn.dataset.lm;
+      renderEats();
+    });
+  });
+
+  // Filter places
+  const filtered = currentLandmark==="전체"
+    ? data.places
+    : data.places.filter(p => p.landmarks.includes(currentLandmark));
+
+  document.getElementById("eats-content").innerHTML = filtered.length
+    ? filtered.map(placeCardHTML).join("")
+    : `<div class="empty-state"><p>이 관광지 근처 등록된 장소가 아직 없어요.</p></div>`;
+}
+
+document.querySelectorAll("#eats-city-nav .sub-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#eats-city-nav .sub-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentEatsCity = btn.dataset.city;
+    currentLandmark = "전체";
+    renderEats();
+  });
+});
+
+/* ═══════════════════════════════
+   TOUR GUIDE LIST
+═══════════════════════════════ */
+const TOUR_META = [
+  { id:"bluemountains",  date:"1/20 수",  bg:"https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=800&q=80" },
+  { id:"portstephens",   date:"1/21 목",  bg:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" },
+  { id:"greatoceanroad", date:"1/25 월",  bg:"https://images.unsplash.com/photo-1545193544-312983719627?auto=format&fit=crop&w=800&q=80" }
+];
+
+function renderTourList() {
+  document.getElementById("tour-list").innerHTML = TOUR_META.map(m => {
+    const t = TOURS[m.id];
+    return `
+      <div class="tour-select-card" onclick="openTour('${m.id}')">
+        <div class="tour-select-bg" style="background-image:url('${m.bg}')"></div>
+        <div class="tour-select-info">
+          <div class="tour-select-date">${m.date}</div>
+          <div class="tour-select-title">${t.title}</div>
+          <div class="tour-select-count">📍 장소 ${t.spots.length}곳 · 상세 가이드 보기 →</div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+/* ═══════════════════════════════
+   TOUR DETAIL
+═══════════════════════════════ */
+let detailReturnTab = "schedule";
+
+function openTour(tourId, fromTab) {
+  detailReturnTab = fromTab || currentTopTab;
+  const tour = TOURS[tourId];
+  if (!tour) return;
+  document.getElementById("detail-hero-img").style.backgroundImage = `url('${tour.heroBg}')`;
+  document.getElementById("detail-title").textContent = tour.title;
+  document.getElementById("detail-date").textContent  = tour.date;
+  document.getElementById("detail-spots").innerHTML   = tour.spots.map((s,i) => {
+    const mealBadge = s.meal ? `<span class="meal-badge meal-${s.meal}">${s.meal}</span>&nbsp;&nbsp;` : "";
+    return `
+    <div class="spot-card">
+      <div class="spot-photo">
+        ${s.photo ? `<img src="${s.photo}" alt="${s.nameKo}">` : photoPlaceholder}
+        <div class="spot-num">${i+1}</div>
+      </div>
+      <div class="spot-info">
+        <div class="spot-name-ko">${mealBadge}${s.nameKo}</div>
+        <div class="spot-name-en">${s.nameEn}</div>
+        <div class="spot-desc">${s.desc}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  document.querySelectorAll("[id^='tab-'], #page-detail").forEach(el => el.style.display="none");
+  document.getElementById("page-detail").style.display = "block";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.getElementById("btn-back").addEventListener("click", () => {
+  document.getElementById("page-detail").style.display = "none";
+  showTab(detailReturnTab);
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+/* ═══════════════════════════════
+   TOP TAB SWITCHING
+═══════════════════════════════ */
+let currentTopTab = "schedule";
+
+function showTab(tabId) {
+  currentTopTab = tabId;
+  document.querySelectorAll(".top-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab===tabId);
+  });
+  document.querySelectorAll("[id^='tab-']").forEach(el => el.style.display="none");
+  document.getElementById("page-detail").style.display = "none";
+  document.getElementById(`tab-${tabId}`).style.display = "block";
+  window.scrollTo({top:0});
+}
+
+document.querySelectorAll(".top-tab").forEach(btn => {
+  btn.addEventListener("click", () => showTab(btn.dataset.tab));
+});
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+renderSchedule("all");
+renderEats();
+renderTourList();
+</script>
+</body>
+</html>
